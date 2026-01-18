@@ -9,6 +9,8 @@ import '../../features/children/presentation/pages/children_list_page.dart';
 import '../../features/children/presentation/pages/child_detail_page.dart';
 import '../../features/children/presentation/pages/add_child_page.dart';
 import '../../features/vaccinations/presentation/pages/vaccination_list_page.dart';
+import '../../features/vaccinations/presentation/pages/vaccination_detail_page.dart';
+import '../../features/beneficiaries/presentation/pages/beneficiary_detail_page.dart';
 import '../../features/scanner/presentation/pages/qr_scanner_page.dart';
 import '../../features/scanner/presentation/pages/vial_scanner_page.dart';
 import '../services/auth_service.dart';
@@ -78,6 +80,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final childId = state.pathParameters['childId']!;
           return VaccinationListPage(childId: int.parse(childId));
+        },
+      ),
+      GoRoute(
+        path: '/vaccinations/:id/detail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return VaccinationDetailPage(vaccinationId: int.parse(id));
+        },
+      ),
+
+      // Beneficiaries
+      GoRoute(
+        path: '/beneficiaries/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return BeneficiaryDetailPage(beneficiaryId: int.parse(id));
         },
       ),
 
