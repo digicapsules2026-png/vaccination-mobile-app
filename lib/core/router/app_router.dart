@@ -10,7 +10,10 @@ import '../../features/children/presentation/pages/child_detail_page.dart';
 import '../../features/children/presentation/pages/add_child_page.dart';
 import '../../features/vaccinations/presentation/pages/vaccination_list_page.dart';
 import '../../features/vaccinations/presentation/pages/vaccination_detail_page.dart';
+import '../../features/vaccinations/presentation/pages/add_vaccination_page.dart';
 import '../../features/beneficiaries/presentation/pages/beneficiary_detail_page.dart';
+import '../../features/reminders/presentation/pages/reminders_page.dart';
+import '../../features/reminders/presentation/pages/reminder_settings_page.dart';
 import '../../features/scanner/presentation/pages/qr_scanner_page.dart';
 import '../../features/scanner/presentation/pages/vial_scanner_page.dart';
 import '../services/auth_service.dart';
@@ -89,6 +92,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           return VaccinationDetailPage(vaccinationId: int.parse(id));
         },
       ),
+      GoRoute(
+        path: '/vaccinations/new',
+        builder: (context, state) {
+          final queryParams = state.uri.queryParameters;
+          final childId = queryParams['childId'] != null ? int.parse(queryParams['childId']!) : null;
+          final beneficiaryId = queryParams['beneficiaryId'] != null ? int.parse(queryParams['beneficiaryId']!) : null;
+          return AddVaccinationPage(childId: childId, beneficiaryId: beneficiaryId);
+        },
+      ),
 
       // Beneficiaries
       GoRoute(
@@ -96,6 +108,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return BeneficiaryDetailPage(beneficiaryId: int.parse(id));
+        },
+      ),
+
+      // Reminders
+      GoRoute(
+        path: '/reminders/:beneficiaryId',
+        builder: (context, state) {
+          final beneficiaryId = state.pathParameters['beneficiaryId']!;
+          return RemindersPage(beneficiaryId: int.parse(beneficiaryId));
+        },
+      ),
+      GoRoute(
+        path: '/reminders/:beneficiaryId/settings',
+        builder: (context, state) {
+          final beneficiaryId = state.pathParameters['beneficiaryId']!;
+          return ReminderSettingsPage(beneficiaryId: int.parse(beneficiaryId));
         },
       ),
 

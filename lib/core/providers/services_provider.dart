@@ -3,6 +3,7 @@ import '../network/api_client.dart';
 import '../services/auth_service.dart';
 import '../../features/beneficiaries/data/services/beneficiaries_service.dart';
 import '../../features/vaccinations/data/services/vaccinations_service.dart';
+import '../../features/vaccines/data/services/vaccines_service.dart';
 import '../../features/documents/data/services/documents_service.dart';
 import '../../features/reminders/data/services/reminders_service.dart';
 
@@ -31,5 +32,10 @@ final documentsServiceProvider = Provider<DocumentsService>((ref) {
 final remindersServiceProvider = Provider<RemindersService>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return RemindersService(apiClient);
+});
+
+final vaccinesServiceProvider = Provider<VaccinesService>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return VaccinesService(apiClient);
 });
 
