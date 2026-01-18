@@ -4,22 +4,30 @@ Production-ready Flutter mobile application for Baby Immunization & Vaccination 
 
 ## 🚀 Overview
 
-A cross-platform mobile app built with Flutter that provides parents with a complete solution to manage their children's vaccination records, schedules, and health documents on-the-go.
+A cross-platform mobile app built with Flutter that provides parents, hospitals, and administrators with a complete solution to manage vaccination records for both children (0-18 years) and adults. The app integrates with a unified beneficiary system, automated reminders, vaccination timelines, and digital document management on-the-go.
 
 ## ✨ Features
 
 ### Core Features
-- **Parent Registration & Login**: Secure JWT-based authentication
-- **Child Profile Management**: Add and manage multiple child profiles
-- **QR Code Generation**: Unique QR code per child for quick access
-- **Vaccination Records**: Complete vaccination history timeline
+- **Unified Beneficiary System**: Manage both ADULT (parent) and CHILD beneficiaries in a single system
+- **Parent & Hospital Authentication**: JWT-based authentication with OTP support and TAB (Token-Based) hospital authentication
+- **Parent Profile & Vaccinations**: Parents can track their own vaccination records
+- **Child Profile Management**: Add and manage multiple child profiles with complete medical information
+- **Vaccination Timeline**: Age-based timeline with status tracking (Administered, Due, Upcoming, Due Next) following WHO/Indian schedules
+- **Automated Reminders**: Scheduled vaccination reminders (7 days before, 1 day before, on due date, follow-up for missed)
+- **Vitals at Vaccination**: Capture temperature, weight, height, pulse rate, and oxygen saturation during vaccination
+- **QR Code System**: Unique QR code per beneficiary for quick access and hospital scanning
+- **Vaccination Records**: Complete vaccination history with detailed information, reactions, and vitals
+- **Vaccination Detail Pages**: Comprehensive views for each vaccination with edit, download, and share capabilities
+- **Vaccine Education**: Parent-friendly educational content explaining vaccine importance and safety
 - **Vaccine Vial Scanning**: Barcode/QR scanning to auto-fill vaccine details
-- **Document Management**: Upload vaccination cards, prescriptions (PDF/Images)
-- **ABHA Integration**: Link Ayushman Bharat Health Account
-- **Vaccination Schedule**: View upcoming vaccines with reminders
-- **Push Notifications**: Vaccination reminders and alerts
+- **Digital Document Locker**: Upload and organize documents (birth certificates, discharge summaries, vaccination cards, vaccine proofs) by category
+- **Document Management**: Secure cloud storage for vaccination cards, prescriptions, medical reports (PDF/Images)
+- **ABHA Integration**: Link with Ayushman Bharat Health Account (future-ready)
+- **Vaccination Schedule**: View upcoming vaccines with reminders and due dates
+- **Push Notifications**: Real-time vaccination reminders and alerts
 - **Offline Access**: Read-only offline access to records
-- **PDF Reports**: Download and share immunization reports
+- **PDF Reports**: Download and share immunization reports and vaccination timelines
 
 ### Technical Features
 - **Flutter 3.x**: Latest stable Flutter SDK
@@ -123,34 +131,63 @@ vaccination-mobile-app/
 │   │   ├── router/
 │   │   │   └── app_router.dart      # Navigation routes
 │   │   ├── network/
-│   │   │   ├── api_client.dart      # Dio client
+│   │   │   ├── api_client.dart      # Dio client with interceptors
 │   │   │   └── api_response.dart    # Response wrapper
 │   │   └── services/
-│   │       ├── auth_service.dart    # Token management
-│   │       └── notification_service.dart
+│   │       ├── auth_service.dart    # Token management & secure storage
+│   │       └── notification_service.dart # Local & push notifications
 │   └── features/                    # Feature modules
 │       ├── auth/                    # Authentication
 │       │   ├── data/
 │       │   │   ├── models/
+│       │   │   │   └── user_model.dart
 │       │   │   └── repositories/
+│       │   │       └── auth_repository.dart
 │       │   └── presentation/
 │       │       └── pages/
 │       │           ├── login_page.dart
 │       │           └── register_page.dart
 │       ├── home/                    # Home dashboard
 │       │   └── presentation/pages/
+│       │       └── home_page.dart   # My Vaccinations & My Children cards
+│       ├── beneficiaries/           # Unified beneficiary management
+│       │   ├── data/models/
+│       │   │   └── beneficiary_model.dart
+│       │   └── presentation/pages/
+│       │       ├── beneficiary_detail_page.dart
+│       │       └── beneficiary_timeline_page.dart
 │       ├── children/                # Child profiles
 │       │   ├── data/models/
+│       │   │   └── child_model.dart
 │       │   └── presentation/pages/
 │       │       ├── children_list_page.dart
-│       │       ├── child_detail_page.dart
-│       │       └── add_child_page.dart
+│       │       ├── child_detail_page.dart    # Overview, Vaccinations, Timeline, Documents tabs
+│       │       ├── add_child_page.dart
+│       │       └── edit_child_page.dart
 │       ├── vaccinations/            # Vaccination records
+│       │   ├── data/models/
+│       │   │   └── vaccination_model.dart
 │       │   └── presentation/pages/
+│       │       ├── vaccination_list_page.dart
+│       │       ├── vaccination_detail_page.dart  # Detailed view with vitals, reactions, education
+│       │       ├── add_vaccination_page.dart
+│       │       └── vaccination_timeline_page.dart # Visual timeline with status colors
+│       ├── documents/               # Document locker
+│       │   ├── data/models/
+│       │   │   └── document_model.dart
+│       │   └── presentation/pages/
+│       │       ├── document_locker_page.dart  # Category-based organization
+│       │       └── document_upload_page.dart
+│       ├── reminders/               # Vaccination reminders
+│       │   ├── data/models/
+│       │   │   └── reminder_model.dart
+│       │   └── presentation/pages/
+│       │       ├── reminders_page.dart
+│       │       └── reminder_settings_page.dart
 │       └── scanner/                 # QR/Barcode scanning
 │           └── presentation/pages/
-│               ├── qr_scanner_page.dart
-│               └── vial_scanner_page.dart
+│               ├── qr_scanner_page.dart      # Scan beneficiary QR codes
+│               └── vial_scanner_page.dart    # Scan vaccine vial barcodes
 ├── android/                         # Android native code
 ├── ios/                            # iOS native code
 ├── assets/                         # Static assets
@@ -204,44 +241,79 @@ Each feature is self-contained with its own:
 
 1. **Login/Register**
    - Email/password authentication
+   - OTP-based authentication (mobile number)
    - JWT token management
 
 2. **Home Dashboard**
-   - Statistics (children, vaccines, upcoming)
-   - Quick actions
-   - Recent activities
+   - "My Vaccinations" card (parent's own vaccination records)
+   - "My Children" card (list of children with vaccination status summaries)
+   - Statistics (total children, upcoming vaccines, vaccination count)
+   - Upcoming vaccination reminders banner
+   - Quick actions and navigation
 
-3. **Children List**
-   - View all children
-   - Add new child
-   - Access child details
+3. **My Vaccinations** (Parent's Profile)
+   - Overview of parent's vaccination records
+   - Vaccination history with timeline
+   - Upcoming vaccinations for parent
+   - Document management
 
-4. **Child Detail**
-   - Complete profile information
-   - Vaccination history
-   - Documents
-   - QR code display
+4. **Children List**
+   - View all children with vaccination status summaries
+   - Add new child profile
+   - Quick access to child details
+   - Status indicators (e.g., "2 due", "All up to date")
 
-5. **Vaccination History**
-   - Timeline view
-   - Vaccine details
-   - Adverse reactions
-   - Verification status
+5. **Child Detail**
+   - **Overview Tab**: Basic information, birth details, vaccination summary, next vaccination reminder
+   - **Vaccinations Tab**: Complete vaccination history list
+   - **Timeline Tab**: Visual age-based vaccination timeline with status colors (Green: Administered, Orange: Due/Upcoming, Grey: Due Next)
+   - **Documents Tab**: Digital document locker organized by categories (Birth, Vaccination, Medical, Identity, Other)
+   - QR code display for hospital scanning
 
-6. **Vaccination Schedule**
-   - Upcoming vaccines
-   - Due dates
-   - Reminders
+6. **Vaccination Timeline**
+   - Age-based timeline following WHO/Indian UIP schedule
+   - Status indicators with color coding
+   - Date ranges for due vaccines (birth doses show specific labels)
+   - Reminders section showing upcoming vaccinations
+   - Click to view vaccination detail pages
+   - Download/Share timeline as PDF
 
-7. **QR Scanner**
-   - Scan child QR code
-   - Quick access to profile
-   - Hospital-friendly interface
+7. **Vaccination Detail Page**
+   - Vaccine information (disease, recommended age, route, site, WHO/UIP reference)
+   - "Why this vaccination is given" educational section
+   - Vaccination record (date, batch, manufacturer, hospital, administered by, notes)
+   - Vitals at vaccination (temperature, weight, height, pulse, oxygen saturation)
+   - Reaction tracking
+   - Proof documents upload
+   - Actions: Edit, Download, Share, Mark as Given
 
-8. **Vial Scanner**
-   - Scan vaccine vial barcode
-   - Auto-fill vaccine details
-   - Batch information
+8. **Add Vaccination Record**
+   - Select child/beneficiary and vaccine
+   - Capture vaccination details (date, batch, hospital, administered by)
+   - Vitals at vaccination section (mandatory: temperature, weight; optional: height, pulse, oxygen)
+   - Reaction tracking
+   - Document upload (vaccination proof)
+
+9. **Document Locker**
+   - Category-based organization (Birth, Vaccination, Medical, Identity, Other)
+   - Filter by category and document type
+   - Upload, view, download, and delete documents
+   - Preview documents (PDF/Images)
+
+10. **Vaccination Schedule/Reminders**
+    - Upcoming vaccines with due dates
+    - Reminder settings (enable/disable per vaccine, notification channels)
+    - Notification center showing all scheduled reminders
+
+11. **QR Scanner**
+    - Scan beneficiary QR code
+    - Quick access to profile and vaccination summary
+    - Hospital-friendly interface
+
+12. **Vial Scanner**
+    - Scan vaccine vial barcode
+    - Auto-fill vaccine details
+    - Batch and manufacturer information
 
 ## 🧪 Testing
 
