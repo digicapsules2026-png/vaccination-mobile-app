@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/providers/services_provider.dart';
+import '../../../../core/utils/pdf_generator.dart';
 import '../../data/models/timeline_model.dart';
+import '../../data/models/beneficiary_model.dart';
 
 class BeneficiaryTimelinePage extends ConsumerStatefulWidget {
   final int beneficiaryId;
@@ -33,8 +35,10 @@ class _BeneficiaryTimelinePageState extends ConsumerState<BeneficiaryTimelinePag
     try {
       final service = ref.read(beneficiariesServiceProvider);
       final timeline = await service.getVaccinationTimeline(widget.beneficiaryId);
+      final beneficiary = await service.getBeneficiaryById(widget.beneficiaryId);
       setState(() {
         _timelineData = timeline;
+        _beneficiary = beneficiary;
         _isLoading = false;
       });
     } catch (e) {
@@ -45,6 +49,94 @@ class _BeneficiaryTimelinePageState extends ConsumerState<BeneficiaryTimelinePag
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to load timeline: $e')),
         );
+      }
+    }
+  }
+
+  Future<void> _handleDownload() async {
+    if (_timelineData == null || _beneficiary == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No data available to download')),
+      );
+      return;
+    }
+
+    // Check if there are any administered vaccines
+    final administeredCount = _timelineData!.timeline
+        .where((item) => item.status.toUpperCase() == 'COMPLETED')
+        .length;
+
+    if (administeredCount == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No administered vaccinations to include in report')),
+      );
+      return;
+    }
+
+    setState(() => _isGeneratingPDF = true);
+    try {
+      await downloadImmunizationReport(
+        beneficiary: _beneficiary!,
+        timelineData: _timelineData!,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Immunization report downloaded successfully!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to download report: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGeneratingPDF = false);
+      }
+    }
+  }
+
+  Future<void> _handleShare() async {
+    if (_timelineData == null || _beneficiary == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No data available to share')),
+      );
+      return;
+    }
+
+    // Check if there are any administered vaccines
+    final administeredCount = _timelineData!.timeline
+        .where((item) => item.status.toUpperCase() == 'COMPLETED')
+        .length;
+
+    if (administeredCount == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No administered vaccinations to include in report')),
+      );
+      return;
+    }
+
+    setState(() => _isGeneratingPDF = true);
+    try {
+      await shareImmunizationReport(
+        beneficiary: _beneficiary!,
+        timelineData: _timelineData!,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Immunization report shared successfully!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to share report: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGeneratingPDF = false);
       }
     }
   }
