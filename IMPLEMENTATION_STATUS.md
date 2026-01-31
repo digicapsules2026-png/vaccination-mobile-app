@@ -81,3 +81,9 @@
 - `GET /api/v1/reminders/beneficiaries/{id}/next`
 - `PUT /api/v1/reminders/preferences/beneficiaries/{id}/vaccines/{vaccineId}`
 
+
+
+
+
+
+

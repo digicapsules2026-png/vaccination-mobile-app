@@ -23,3 +23,9 @@ class VaccineModel with _$VaccineModel {
       _$VaccineModelFromJson(json);
 }
 
+
+
+
+
+
+

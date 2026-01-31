@@ -194,3 +194,9 @@ class _VaccinationDetailPageState extends ConsumerState<VaccinationDetailPage> {
   }
 }
 
+
+
+
+
+
+
