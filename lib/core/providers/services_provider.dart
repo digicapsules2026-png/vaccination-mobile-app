@@ -7,6 +7,7 @@ import '../../features/vaccines/data/services/vaccines_service.dart';
 import '../../features/documents/data/services/documents_service.dart';
 import '../../features/reminders/data/services/reminders_service.dart';
 import '../../features/analytics/data/services/facility_analytics_service.dart';
+import '../../features/marketplace/data/services/marketplace_service.dart';
 
 // API Client provider
 final apiClientProvider = Provider<ApiClient>((ref) {
@@ -43,5 +44,10 @@ final vaccinesServiceProvider = Provider<VaccinesService>((ref) {
 final facilityAnalyticsServiceProvider = Provider<FacilityAnalyticsService>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return FacilityAnalyticsService(apiClient);
+});
+
+final marketplaceServiceProvider = Provider<MarketplaceService>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return MarketplaceService(apiClient);
 });
 

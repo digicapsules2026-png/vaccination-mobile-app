@@ -11,7 +11,7 @@ class ApiClient {
   ApiClient(this._authService) {
     _dio = Dio(
       BaseOptions(
-        baseUrl: AppConfig.fullApiUrl,
+        baseUrl: AppConfig.apiBaseUrl,
         connectTimeout: AppConstants.connectTimeout,
         receiveTimeout: AppConstants.receiveTimeout,
         headers: {
@@ -68,6 +68,10 @@ class ApiClient {
 
   Dio get dio => _dio;
 }
+
+
+
+
 
 
 

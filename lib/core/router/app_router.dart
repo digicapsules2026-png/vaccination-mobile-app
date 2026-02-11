@@ -16,6 +16,11 @@ import '../../features/reminders/presentation/pages/reminders_page.dart';
 import '../../features/reminders/presentation/pages/reminder_settings_page.dart';
 import '../../features/scanner/presentation/pages/qr_scanner_page.dart';
 import '../../features/scanner/presentation/pages/vial_scanner_page.dart';
+import '../../features/marketplace/presentation/pages/marketplace_search_page.dart';
+import '../../features/marketplace/presentation/pages/listing_detail_page.dart';
+import '../../features/marketplace/presentation/pages/bookings_list_page.dart';
+import '../../features/marketplace/presentation/pages/booking_detail_page.dart';
+import '../../features/marketplace/presentation/pages/payment_page.dart';
 import '../services/auth_service.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -135,6 +140,37 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/scanner/vial',
         builder: (context, state) => const VialScannerPage(),
+      ),
+
+      // Marketplace routes (MVP-2)
+      GoRoute(
+        path: '/marketplace',
+        builder: (context, state) => const MarketplaceSearchPage(),
+      ),
+      GoRoute(
+        path: '/marketplace/listing/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ListingDetailPage(listingId: int.parse(id));
+        },
+      ),
+      GoRoute(
+        path: '/marketplace/bookings',
+        builder: (context, state) => const BookingsListPage(),
+      ),
+      GoRoute(
+        path: '/marketplace/booking/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return BookingDetailPage(bookingId: int.parse(id));
+        },
+      ),
+      GoRoute(
+        path: '/marketplace/booking/:id/payment',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return PaymentPage(bookingId: int.parse(id));
+        },
       ),
     ],
   );

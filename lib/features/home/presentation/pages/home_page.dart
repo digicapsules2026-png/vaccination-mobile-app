@@ -54,6 +54,29 @@ class _HomePageState extends ConsumerState<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Quick Actions Row
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _QuickActionCard(
+                            icon: Icons.shopping_cart,
+                            title: 'Book Vaccination',
+                            color: Colors.green,
+                            onTap: () => context.push('/marketplace'),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _QuickActionCard(
+                            icon: Icons.event,
+                            title: 'My Bookings',
+                            color: Colors.blue,
+                            onTap: () => context.push('/marketplace/bookings'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
                     // Two Main Cards - Same Height
                     SizedBox(
                       height: 500,
@@ -365,35 +388,6 @@ class _MyChildrenCardState extends State<_MyChildrenCard> {
                                                 child.gender.toLowerCase() == 'male'
                                                     ? Colors.blue.withOpacity(0.1)
                                                     : Colors.pink.withOpacity(0.1),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            'Vaccination Status:',
-                                            style: AppTextStyles.caption.copyWith(
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: AppTheme.successColor.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              'All up to date',
-                                              style: AppTextStyles.caption.copyWith(
-                                                color: AppTheme.successColor,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
                                           ),
                                         ],
                                       ),

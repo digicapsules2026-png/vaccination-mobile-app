@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/providers/services_provider.dart';
+import '../../../../core/services/auth_service.dart';
 import '../../data/models/beneficiary_model.dart';
 import '../../data/models/timeline_model.dart';
 import '../../../vaccinations/data/models/vaccination_model.dart';
@@ -239,10 +240,13 @@ class _BeneficiaryDetailPageState extends ConsumerState<BeneficiaryDetailPage>
   }
 
   Widget _buildVaccinationsTab() {
-    return FutureBuilder<List<VaccinationModel>>(
-      future: ref.read(vaccinationsServiceProvider).getAllVaccinations(
-        beneficiaryId: widget.beneficiaryId,
-      ),
+    return FutureBuilder<List<dynamic>>(
+      future: Future.wait([
+        ref.read(vaccinationsServiceProvider).getAllVaccinations(
+          beneficiaryId: widget.beneficiaryId,
+        ),
+        ref.read(authServiceProvider).getUser(),
+      ]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -252,7 +256,13 @@ class _BeneficiaryDetailPageState extends ConsumerState<BeneficiaryDetailPage>
           return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        final vaccinations = snapshot.data ?? [];
+        final results = snapshot.data as List<dynamic>?;
+        if (results == null || results.length < 2) {
+          return const Center(child: Text('Failed to load data'));
+        }
+        final vaccinations = results[0] as List<VaccinationModel>;
+        final user = results[1] as dynamic?;
+        final isParent = user?.role == 'parent' || user?.role == 'individual';
 
         if (vaccinations.isEmpty) {
           return Center(
@@ -262,14 +272,16 @@ class _BeneficiaryDetailPageState extends ConsumerState<BeneficiaryDetailPage>
                 Icon(Icons.vaccines_outlined, size: 64, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 Text('No vaccinations recorded', style: AppTextStyles.body2),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    context.push('/vaccinations/new?beneficiaryId=${widget.beneficiaryId}');
-                  },
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Vaccination'),
-                ),
+                if (!isParent) ...[
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      context.push('/vaccinations/new?beneficiaryId=${widget.beneficiaryId}');
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Vaccination'),
+                  ),
+                ],
               ],
             ),
           );
@@ -313,6 +325,11 @@ class _BeneficiaryDetailPageState extends ConsumerState<BeneficiaryDetailPage>
     return DocumentLockerPage(childId: childId);
   }
 }
+
+
+
+
+
 
 
 

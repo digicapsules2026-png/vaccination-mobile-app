@@ -26,6 +26,7 @@ class AppConfig {
   }
 
   static String get fullApiUrl => '$apiBaseUrl/api/$apiVersion';
+  static String get v2ApiUrl => '$apiBaseUrl/api/v2';
 }
 
 class AppConstants {
@@ -50,6 +51,10 @@ class AppConstants {
   static const String dateFormat = 'dd MMM yyyy';
   static const String dateTimeFormat = 'dd MMM yyyy, HH:mm';
 }
+
+
+
+
 
 
 
