@@ -31,8 +31,11 @@ class _QRScannerPageState extends State<QRScannerPage> {
 
     setState(() => _isProcessing = true);
 
+    // Stop scanner immediately after successful detection
+    await cameraController.stop();
+
     // Process QR code
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 300));
     
     if (mounted) {
       Navigator.pop(context, code);
@@ -184,6 +187,10 @@ class ScanOverlayPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
+
+
 
 
 

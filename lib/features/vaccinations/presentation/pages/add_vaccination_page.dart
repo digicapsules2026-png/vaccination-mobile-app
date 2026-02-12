@@ -238,8 +238,20 @@ class _AddVaccinationPageState extends ConsumerState<AddVaccinationPage> {
       }
     } catch (e) {
       if (mounted) {
+        // Extract detailed error message from DioException or other error types
+        String errorMessage = 'Failed to create vaccination record';
+        if (e.toString().contains('dose_number')) {
+          errorMessage = 'Invalid dose number. Dose 0 is allowed for birth doses like OPV.';
+        } else if (e.toString().contains('vaccination_date') || e.toString().contains('date')) {
+          errorMessage = 'Invalid vaccination date. Date cannot be in the future.';
+        } else if (e.toString().isNotEmpty) {
+          errorMessage = 'Failed to create vaccination: ${e.toString()}';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create vaccination: $e')),
+          SnackBar(
+            content: Text(errorMessage),
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
     } finally {
@@ -540,6 +552,10 @@ class _AddVaccinationPageState extends ConsumerState<AddVaccinationPage> {
     );
   }
 }
+
+
+
+
 
 
 
